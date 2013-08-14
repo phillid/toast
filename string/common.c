@@ -45,14 +45,17 @@ void itoa(uint32_t num,char *buffer)
 
 }
 
-void atoi(char *string)
+uint32_t atoi(char *string)
 {
 	uint32_t i;
-	uint32_t multiplier;
+	uint32_t multiplier = 1;
+	uint32_t total = 0;
 	for (i = 0; i < strlen(string); i++)
 	{
-
+		total += (string[strlen(string)-1-i] - 48) * multiplier;
+		multiplier*=10;
 	}
+	return total;
 }
 
 #endif

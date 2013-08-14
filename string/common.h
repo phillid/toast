@@ -21,5 +21,6 @@
 
 uint64_t strlen(char *string);
 void itoa(uint32_t num,char *buffer);
+uint32_t atoi(char *string);
 
 #endif

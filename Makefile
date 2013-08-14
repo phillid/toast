@@ -6,13 +6,17 @@ CFLAGS			= -I. -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 ASFLAGS			= -felf
 LDFLAGS			= -Tlink.ld
 
-TOAST_TARGET	= ~/toast/toast_img/
-SOURCES			= boot.o kernel.o console.o string.o lowlevel.o
+TOAST_TARGET	= ~/programming/toast/toast_img/
+SOURCES			=	boot/boot.o \
+					screen/console.o \
+					string/common.o \
+					kernel.o \
+					lowlevel.o
 
 all: $(SOURCES) link
 
 clean:
-	- rm *.o kernel
+	- rm *.o */*.o kernel
 
 link:
 	- $(LD) $(LDFLAGS) -o kernel $(SOURCES)
@@ -22,7 +26,7 @@ link:
 
 install:
 #	sudo umount $(TOAST_TARGET)
-	sudo mount /dev/loop11p1 $(TOAST_TARGET)
+	sudo mount /dev/loop0p1 $(TOAST_TARGET)
 	sudo cp kernel $(TOAST_TARGET)
 	sudo umount $(TOAST_TARGET)
 	bochs -qf bochsrc

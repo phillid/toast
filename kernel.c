@@ -52,7 +52,7 @@ void kernel_main(multiboot_info_t *mbd, unsigned int magic)
 		console_print("%s: 0x%x to 0x%x = %d bytes\n",
 						mmap->type == 1? "AVAILABLE" : "RESERVED ",
 						mmap->addr,
-						mmap->addr+mmap->len-1,
+						mmap->addr + mmap->len-1,
 						mmap->len
 		);
 	}

@@ -174,7 +174,7 @@ void console_print(const char* format, ...)
 					console_print_char(va_arg(strings, uint64_t));
 					break;
 				case 'd':
-					console_print_num(va_arg(strings, uint64_t),10);
+					console_print_num(va_arg(strings, uint32_t),10);
 					break;
 				case 'x':
 					console_print_num(va_arg(strings, uint64_t),16);

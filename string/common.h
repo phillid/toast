@@ -19,8 +19,10 @@
 #ifndef STRING_COMMON_H
 #define STRING_COMMON_H
 
-uint64_t strlen(char *string);
-void itoa(uint32_t num,char *buffer);
-uint32_t atoi(char *string);
+uint64_t strlen(const char *string);
+bool itoa(uint32_t num, char *buffer, uint8_t base);
+uint32_t atoi(const char *string);
+void memcpy(void *to, const void *from, uint32_t size);
+void memset(void *to, uint8_t value, uint32_t size);
 
 #endif

@@ -11,7 +11,8 @@ SOURCES			=	boot/boot.o \
 					screen/console.o \
 					string/common.o \
 					kernel.o \
-					lowlevel.o
+					lowlevel.o\
+					panic.o
 
 all: $(SOURCES) link
 
@@ -28,5 +29,6 @@ install:
 #	sudo umount $(TOAST_TARGET)
 	sudo mount /dev/loop0p1 $(TOAST_TARGET)
 	sudo cp kernel $(TOAST_TARGET)
+	ls $(TOAST_TARGET)
 	sudo umount $(TOAST_TARGET)
 	bochs -qf bochsrc

@@ -16,7 +16,6 @@
  *
  */
 
-
 // Complain if some pleb's not using a cross-compiler
 #if defined(__linux__)
 	#error "You're not using a cross-compiler. Good luck with that."
@@ -24,16 +23,40 @@
 
 #include <toast.h>
 
-void kernel_main()
+void kernel_main(multiboot_info_t *mbd, unsigned int magic)
 {
-	char b[10];
 	console_init();
 	console_set_colors(COLOR_BRIGHT_GRAY,COLOR_BLACK);
 	console_clear();
-	console_print("Welcome to Toast "KERNEL_VERSION" (nickname '"KERNEL_NICKNAME"')\n");
+	console_print("Welcome to Toast v%d.%d (nickname '%s')\n",KERNEL_VERSION_MAJ,KERNEL_VERSION_MIN,KERNEL_NICKNAME);
 	console_set_color(COLOR_RED);
+
+	// Print some stuff about the bootload
 	console_print("Here is kernel_main()\n");
-	char test[] = "1234";
-	int a = atoi(test);
-	itoa(a,b);
+	console_print("Bootloader: %s\n",mbd->boot_loader_name);
+	console_print("BIOS Memory: %d Bytes\n",mbd->mem_upper - mbd->mem_lower);// find out 100% what this is
+	console_print("Kernel: %s\n",mbd->cmdline);
+	console_print("Flags: %b\n",mbd->flags);
+	console_print("Boot Device: %x\n",mbd->boot_device);
+
+	console_print("--------------------------------\nShowing console_print() off...\n%dd in binary is %b\n%oo = %xh = %dd\n%d is the ASCII code for %c\n--------------------------------\n",100,100,1234,1234,1234,112,112);
+
+
+	// Show all memory stuff
+	uint32_t mmaps = mbd->mmap_length;
+
+	multiboot_memory_map_t* mmap = mbd->mmap_addr;
+	while(mmap < mbd->mmap_addr + mbd->mmap_length)
+	{
+		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
+		console_print("%s: 0x%x to 0x%x = %d bytes\n",
+						mmap->type == 1? "AVAILABLE" : "RESERVED ",
+						mmap->addr,
+						mmap->addr+mmap->len-1,
+						mmap->len
+		);
+	}
+
+
+	//panic(0x4655434B); // (TEST) testing panic
 }

@@ -19,17 +19,24 @@
 #ifndef TOAST_H
 #define TOAST_H
 
-#define KERNEL_VERSION		"0.1"
+#define KERNEL_VERSION_MAJ	0
+#define KERNEL_VERSION_MIN	1
 #define KERNEL_NICKNAME		"Hydrogen"
+#define NULL				0
+#define SUCCESS				1
 
-#include <stdbool.h>				// Get our booleans defined
 #include <stdint.h>					// uint_8 etc
+#include <stdbool.h>				// Get our boolean types defined
 
-#include <screen/console.h>		// Console output functions
-//#include <console.h>		// Console output functions
+#define TRUE true
+#define FALSE false
+
+#include <screen/console.h>			// Console output functions
 #include <lowlevel.h>				// Low level assembly, eg outb(port,val)
 #include <string/common.h>			// Common string functions
-//#include <string.h>			// Common string functions
+#include <panic.h>					// Kernel panic and emergency procedures
+#include <multiboot.h>
+
 
 // KERNEL.C
 void kernel_main();

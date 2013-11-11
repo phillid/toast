@@ -20,5 +20,7 @@
 #define LOWLEVEL_H
 
 void outb(uint16_t p,uint8_t val);
+void disable_ints();
+void enable_ints();
 
 #endif

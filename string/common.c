@@ -21,31 +21,31 @@
 
 #include <toast.h>
 
-uint64_t strlen(char *string)
+uint64_t strlen(const char *string)
 {
 	uint64_t l = 0;
-	while (string[l] != 0)
-		l++;
+	while (string[++l] != 0);
 	return l;
 }
 
-void itoa(uint32_t num,char *buffer)
+bool itoa(uint32_t num, char *buffer, uint8_t base)
 {
+	// Lookup table is valid up to heptadecimal (it's an inside joke)
+	char lookup[] = "0123456789ABCDEFG";
+	if (base > 17)
+		return FALSE;
 	uint8_t i;
-	uint8_t remainder;
-
-	for(i = 10; i > 0; i--)
+	/// (Buffer size is 32 bytes)
+	for(i = 31; i > 0; i--)
 	{
-		remainder = num % 10;
-		num = (uint32_t)(num /10);
-		buffer[i-1] = remainder+48;
-		console_print(buffer);
+		buffer[i-1] = lookup[(num % base)];
+		num = (uint32_t)(num/base);
 	}
-	buffer[10] = 0;
-
+	buffer[31] = 0;
+	return TRUE;
 }
 
-uint32_t atoi(char *string)
+uint32_t atoi(const char *string)
 {
 	uint32_t i;
 	uint32_t multiplier = 1;
@@ -58,4 +58,36 @@ uint32_t atoi(char *string)
 	return total;
 }
 
+//strcmp()
+// UNFINISHED
+/*bool string_contains(char *haystack, char *needle)
+{
+	return FALSE;
+	uint32_t i;
+	for (i = strlen(haystack)-(strlen(needle)+1); i >= 0; i--)
+	{
+	//	if ()
+	}
+}*/
+
+void memcpy(void *to, const void *from, uint32_t size)
+{
+	// TO DO: copy more than one byte at a time
+	char *t = to;
+	const char *f = from;
+	uint32_t i;
+	for (i = 0; i < size; i++)
+		t[i] = f[i];
+}
+
+
+void memset(void *to, uint8_t value, uint32_t size)
+{
+	// TO DO: copy more than one byte at a time
+	char *t = to;
+	uint32_t i;
+	for (i = 0; i < size; i++)
+		t[i] = value;
+
+}
 #endif

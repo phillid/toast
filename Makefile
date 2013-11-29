@@ -27,7 +27,7 @@ link:
 
 install:
 #	sudo umount $(TOAST_TARGET)
-	sudo mount /dev/loop0p1 $(TOAST_TARGET)
+	sudo mount /dev/loop1p1 $(TOAST_TARGET)
 	sudo cp kernel $(TOAST_TARGET)
 	ls $(TOAST_TARGET)
 	sudo umount $(TOAST_TARGET)

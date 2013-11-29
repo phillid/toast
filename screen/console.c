@@ -171,19 +171,19 @@ void console_print(const char* format, ...)
 					console_print_string(va_arg(strings, char*));
 					break;
 				case 'c':
-					console_print_char(va_arg(strings, uint64_t));
+					console_print_char(va_arg(strings, int));
 					break;
 				case 'd':
-					console_print_num(va_arg(strings, uint32_t),10);
+					console_print_num(va_arg(strings, int),10);
 					break;
 				case 'x':
-					console_print_num(va_arg(strings, uint64_t),16);
+					console_print_num(va_arg(strings, int),16);
 					break;
 				case 'o':
-					console_print_num(va_arg(strings, uint64_t),8);
+					console_print_num(va_arg(strings, int),8);
 					break;
 				case 'b':
-					console_print_num(va_arg(strings, uint64_t),2);
+					console_print_num(va_arg(strings, int),2);
 					break;
 			}
 		} else {

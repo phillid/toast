@@ -24,8 +24,8 @@
 uint64_t strlen(const char *string)
 {
 	uint64_t l = 0;
-	while (string[++l] != 0);
-	return l;
+	while (string[l++]);
+	return l-1;
 }
 
 bool itoa(uint32_t num, char *buffer, uint8_t base)

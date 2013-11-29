@@ -41,7 +41,8 @@ void kernel_main(multiboot_info_t *mbd, unsigned int magic)
 
 	console_print("--------------------------------\nShowing console_print() off...\n%dd in binary is %b\n%oo = %xh = %dd\n%d is the ASCII code for %c\n--------------------------------\n",100,100,1234,1234,1234,112,112);
 
-
+	console_print("strlen(\"asdf\") == %d\n",strlen("asdf"));
+	console_print("strlen(\"\") == %d\n",strlen(""));
 	// Show all memory stuff
 	uint32_t mmaps = mbd->mmap_length;
 
@@ -51,9 +52,9 @@ void kernel_main(multiboot_info_t *mbd, unsigned int magic)
 		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
 		console_print("%s: 0x%x to 0x%x = %d bytes\n",
 						mmap->type == 1? "AVAILABLE" : "RESERVED ",
-						mmap->addr,
-						mmap->addr + mmap->len-1,
-						mmap->len
+						(uint32_t)mmap->addr,
+						(uint32_t)mmap->addr + (uint32_t)mmap->len-1,
+						(uint32_t)mmap->len
 		);
 	}
 

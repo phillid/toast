@@ -21,22 +21,22 @@
 
 #include <toast.h>
 
-void outb(uint16_t p,uint8_t val)
+void outb(uint16_t port, uint8_t data)
 {
    asm("outb %%al,%%dx;"
 		   :
-		   :"d"(p),"a"(val)
+		   :"d"(port),"a"(data)
    );
 }
 
 void disable_ints()
 {
-	asm("cli"::);
+	asm("cli");
 }
 
 void enable_ints()
 {
-	asm("sti"::);
+	asm("sti");
 }
 
 #endif

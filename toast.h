@@ -25,7 +25,7 @@
 #define NULL				0
 #define SUCCESS				1
 
-#include <stdint.h>					// uint_8 etc
+#include <stdint.h>					// uint8_t etc
 #include <stdbool.h>				// Get our boolean types defined
 
 #define TRUE true
@@ -35,10 +35,11 @@
 #include <lowlevel.h>				// Low level assembly, eg outb(port,val)
 #include <string/common.h>			// Common string functions
 #include <panic.h>					// Kernel panic and emergency procedures
-#include <multiboot.h>
-
+#include <multiboot.h>				// Multiboot structs predefined
 
 // KERNEL.C
 void kernel_main();
+void k_dump_memory_blocks(multiboot_info_t *mbd);
+uint32_t *k_tally_available_memory(multiboot_info_t *mbd);
 
 #endif

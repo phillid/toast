@@ -16,14 +16,17 @@
  *
  */
 
-#ifndef STRING_COMMON_H
-#define STRING_COMMON_H
+#ifndef PANIC_C
+#define PANIC_C
 
-uint64_t strlen(const char *string);
-bool itoa(uint32_t num, char *buffer, uint8_t base);
-uint32_t atoi(const char *string);
-bool string_contains(char *haystack, char *needle);
-void memcpy(void *to, const void *from, uint32_t size);
-void memset(void *to, uint8_t value, uint32_t size);
+#include <toast.h>
+
+void panic()
+{
+	console_set_colors(COLOR_WHITE,COLOR_GREEN);
+	console_clear();
+	console_print("Kernel panic, sorry!");
+	_kernel_exit();
+}
 
 #endif

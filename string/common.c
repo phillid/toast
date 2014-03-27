@@ -60,15 +60,36 @@ uint32_t atoi(const char *string)
 
 //strcmp()
 // UNFINISHED
-/*bool string_contains(char *haystack, char *needle)
+
+// HAYSTACK:
+// foo bar hello woo
+
+// NEEDLE:
+// hello
+bool string_contains(char *haystack, char *needle)
 {
-	return FALSE;
 	uint32_t i;
-	for (i = strlen(haystack)-(strlen(needle)+1); i >= 0; i--)
+	uint32_t j;
+	uint32_t hlen = strlen(haystack);
+	uint32_t nlen = strlen(needle);
+
+	// If needle is longer than haystack, it can't be in there!
+	if (strlen(needle) > strlen(haystack))
+		return FALSE;
+
+	for (i = 0; i < hlen; i++)
 	{
-	//	if ()
+		for (j = 0; j < nlen; j++)
+		{
+			if (haystack[j+i] != needle[j])
+				break;
+		}
+		// Reached end of haystack without mismatch, we've found the needle!
+		if (j == nlen)
+			return TRUE;
 	}
-}*/
+	return FALSE;
+}
 
 void memcpy(void *to, const void *from, uint32_t size)
 {

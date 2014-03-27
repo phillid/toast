@@ -43,13 +43,14 @@
 #define COLOR_YELLOW		0xE
 #define COLOR_WHITE			0xF
 
-#define COLOR_BRIGHT_GRAY	COLOR_BRIGHT_GREY	// Alias for grey vs gray
-#define COLOR_GREY			COLOR_GRAY			// Alias for grey vs gray
-#define COLOR_LIME			COLOR_BRIGHT_GREEN	// Alias for lime vs bright green
+#define COLOR_BRIGHT_GRAY	COLOR_BRIGHT_GREY	// Alias for grey <--> gray
+#define COLOR_GREY			COLOR_GRAY			// Alias for grey <--> gray
+#define COLOR_LIME			COLOR_BRIGHT_GREEN	// Alias for lime <--> bright green
 
 char* console_buffer;
 uint16_t console_pointer;
 uint8_t console_color;
+uint8_t saved_console_color;
 
 void console_init();
 void console_set_cursor_xy(uint8_t x,uint8_t y);
@@ -57,6 +58,7 @@ void console_update_cursor();
 void console_clear();
 void console_set_colors(uint8_t fg, uint8_t bg);
 void console_set_color(uint8_t fg);
+void console_swap_colors();
 void console_print_char(const char c);
 void console_print_string(const char *string);
 void console_print(const char* format,...);

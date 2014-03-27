@@ -16,48 +16,128 @@
  *
  */
 
-// Complain if some pleb's not using a cross-compiler
+// Complain if some pleb's using a linux toolchain and not cross-compiling
 #if defined(__linux__)
 	#error "You're not using a cross-compiler. Good luck with that."
 #endif
 
 #include <toast.h>
 
-void kernel_main(multiboot_info_t *mbd, unsigned int magic)
+// vv-- Put me somewhere --vv
+uint32_t TOTAL_MEMORY = 0;			// Total memory. Typically set by k_tally_available_memory().
+									// It must be initialised to 0 so that if it's not set otherwise, nothing will think there's memory available
+bool KERNEL_OPTION_QUIET	= FALSE;
+bool KERNEL_OPTION_SILENT	= FALSE;
+bool KERNEL_OPTION_ESHELL	= FALSE;
+// ^^-- put me somewhere --^
+
+void kernel_main(multiboot_info_t *mbd, uint32_t magic)
 {
-	console_init();
-	console_set_colors(COLOR_BRIGHT_GRAY,COLOR_BLACK);
-	console_clear();
-	console_print("Welcome to Toast v%d.%d (nickname '%s')\n",KERNEL_VERSION_MAJ,KERNEL_VERSION_MIN,KERNEL_NICKNAME);
-	console_set_color(COLOR_RED);
+	//*********************************************************
+	// First things first. Parse the command line. Quick guide:
+	//
+	//  o quiet  - Don't print so much stuff to the screen during boot
+	//  o silent - Don't print anything at all during boot (implies quiet)
+	//  o eshell - (RESERVED) Will be used to enter emergency shell
+	//
+	if (string_contains( (char*)(mbd->cmdline) , "quiet"))
+		KERNEL_OPTION_QUIET = TRUE;
 
-	// Print some stuff about the bootload
-	console_print("Here is kernel_main()\n");
-	console_print("Bootloader: %s\n",mbd->boot_loader_name);
-	console_print("BIOS Memory: %d Bytes\n",mbd->mem_upper - mbd->mem_lower);// find out 100% what this is
-	console_print("Kernel: %s\n",mbd->cmdline);
-	console_print("Flags: %b\n",mbd->flags);
-	console_print("Boot Device: %x\n",mbd->boot_device);
-
-	console_print("--------------------------------\nShowing console_print() off...\n%dd in binary is %b\n%oo = %xh = %dd\n%d is the ASCII code for %c\n--------------------------------\n",100,100,1234,1234,1234,112,112);
-
-	console_print("strlen(\"asdf\") == %d\n",strlen("asdf"));
-	console_print("strlen(\"\") == %d\n",strlen(""));
-	// Show all memory stuff
-	uint32_t mmaps = mbd->mmap_length;
-
-	multiboot_memory_map_t* mmap = mbd->mmap_addr;
-	while(mmap < mbd->mmap_addr + mbd->mmap_length)
+	if (string_contains( (char*)(mbd->cmdline) , "silent"))
 	{
-		mmap = (multiboot_memory_map_t*) ( (unsigned int)mmap + mmap->size + sizeof(unsigned int) );
-		console_print("%s: 0x%x to 0x%x = %d bytes\n",
-						mmap->type == 1? "AVAILABLE" : "RESERVED ",
+		KERNEL_OPTION_QUIET = TRUE;
+		KERNEL_OPTION_SILENT = TRUE;
+	}
+	if (string_contains( (char*)(mbd->cmdline) , "eshell"))
+		KERNEL_OPTION_ESHELL = TRUE;
+	//*********************************************************
+
+	//*********************************************************
+	// Do some important things before we forget
+	k_tally_available_memory(mbd);
+
+	// Init the text console and colours
+	console_init();
+	console_set_colors(COLOR_BRIGHT_GRAY, COLOR_BLACK);
+	console_swap_colors();
+	console_set_colors(COLOR_BRIGHT_GRAY, COLOR_BLACK);
+	console_clear();
+	//*********************************************************
+
+	if (!KERNEL_OPTION_QUIET)
+	{
+		// Print some stuff about the environment
+		console_print("Here is kernel_main()\n");
+		console_print("Bootloader: %s\n",mbd->boot_loader_name);
+		console_print("Kernel: %s\n",mbd->cmdline);
+		console_print("Flags: %b\n",mbd->flags);
+		console_print("Boot Device: %x\n",mbd->boot_device);
+
+		// Dump some info about the memory blocks/regions available/reserved
+		k_dump_memory_blocks(mbd);
+	}
+	if (!KERNEL_OPTION_SILENT)
+	{
+		console_print("Welcome to Toast v%d.%d (nickname '%s')\nMemory: %dMiB",
+						KERNEL_VERSION_MAJ,
+						KERNEL_VERSION_MIN,
+						KERNEL_NICKNAME,
+						TOTAL_MEMORY/1048576);
+	}
+	//panic(0x4655434B); // (TEST) testing panic
+}
+
+/*********************************************************
+ * Tally/total the amount of available memory and store
+ * it for later use. Returns pointer to total mem figure
+ ********************************************************/
+uint32_t *k_tally_available_memory(multiboot_info_t *mbd)
+{
+	multiboot_memory_map_t* mmap = (multiboot_memory_map_t*)mbd->mmap_addr;
+	TOTAL_MEMORY = 0;
+
+	while((uint32_t)mmap < mbd->mmap_addr + mbd->mmap_length)
+	{
+		mmap = (multiboot_memory_map_t*)( (uint32_t)mmap + mmap->size + sizeof(uint32_t) );
+
+		if (mmap->type == 1) // available
+			TOTAL_MEMORY += (uint32_t)mmap->len;
+	}
+	return &TOTAL_MEMORY;
+}
+
+/*********************************************************
+ * Dump information about the blocks of memory. What
+ * starts and finishes where and available/reserved
+ ********************************************************/
+void k_dump_memory_blocks(multiboot_info_t *mbd)
+{
+	multiboot_memory_map_t* mmap = (multiboot_memory_map_t*)mbd->mmap_addr;
+
+	// While we're pointing to a mem map struct within the supplied range...
+	while((uint32_t)mmap < mbd->mmap_addr + mbd->mmap_length)
+	{
+		mmap = (multiboot_memory_map_t*)( (uint32_t)mmap + mmap->size + sizeof(uint32_t) );
+		console_print("[");
+
+		// Save current console colours
+		console_swap_colors();
+
+		if (mmap->type == 1)
+		{
+			console_set_colors(COLOR_GREEN, COLOR_BLACK);
+			console_print("   FREE   ");
+		} else {
+			console_set_colors(COLOR_RED, COLOR_BLACK);
+			console_print(" RESERVED ");
+		}
+		// Restore old console colours
+		console_swap_colors();
+
+		console_print("] 0x%x to 0x%x = %d bytes\n",
 						(uint32_t)mmap->addr,
 						(uint32_t)mmap->addr + (uint32_t)mmap->len-1,
 						(uint32_t)mmap->len
 		);
 	}
-
-
-	//panic(0x4655434B); // (TEST) testing panic
 }

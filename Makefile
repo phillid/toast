@@ -6,7 +6,9 @@ CFLAGS			= -I. -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 ASFLAGS			= -felf
 LDFLAGS			= -Tlink.ld
 
-TOAST_TARGET	= ~/programming/toast/toast_img/
+KERNEL			= toastk
+
+TOAST_TARGET	= ~/programming/toast/toast-hdd-img/
 SOURCES			=	boot/boot.o \
 					screen/console.o \
 					string/common.o \
@@ -17,18 +19,20 @@ SOURCES			=	boot/boot.o \
 all: $(SOURCES) link
 
 clean:
-	- rm *.o */*.o kernel
+	- rm *.o */*.o $(KERNEL)
 
 link:
-	- $(LD) $(LDFLAGS) -o kernel $(SOURCES)
+	- $(LD) $(LDFLAGS) -o $(KERNEL) $(SOURCES)
 
 .s.o:
 	- nasm $(ASFLAGS) $<
 
 install:
-#	sudo umount $(TOAST_TARGET)
-	sudo mount /dev/loop1p1 $(TOAST_TARGET)
-	sudo cp kernel $(TOAST_TARGET)
+	# need a better way to automate this first bit
+	sudo mount /dev/loop0p1 $(TOAST_TARGET)
+
+	sudo cp $(KERNEL) $(TOAST_TARGET)
 	ls $(TOAST_TARGET)
 	sudo umount $(TOAST_TARGET)
-	bochs -qf bochsrc
+	#bochs -qf bochsrc
+	qemu-system-i386 -m 64 -hdd ../toast-hdd.img

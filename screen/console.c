@@ -74,6 +74,15 @@ void console_set_colors(uint8_t fg, uint8_t bg)
 	console_color = (bg << 4) | fg;
 }
 
+/*********************************************************
+ * Swap the current console colours out
+ ********************************************************/
+void console_swap_colors()
+{
+	uint32_t t = console_color;
+	console_color = saved_console_color;
+	saved_console_color = t;
+}
 
 /*********************************************************
  * Set ONLY the console foreground colour
